@@ -45,9 +45,22 @@ class Task:
         """Set a new time for the task."""
         self.time = time
 
-    def mark_completed(self) -> None:
-        """Mark the task as completed."""
+    def mark_completed(self):
+        """Mark the task as completed and return next recurrence if applicable."""
         self.completion_status = CompletionStatus.COMPLETED
+
+        next_time = self.get_next_occurrence()
+        if next_time is None:
+            return None
+
+        return Task(
+            description=self.description,
+            time=next_time,
+            frequency=self.frequency,
+            completion_status=CompletionStatus.PENDING,
+            duration=self.duration,
+            priority=self.priority,
+        )
 
     def is_overdue(self) -> bool:
         """Check if the task is overdue."""
@@ -184,9 +197,12 @@ class Scheduler:
         """Schedule a new task for a specific pet."""
         pet.add_task(task)
 
-    def mark_task_completed(self, task: Task) -> None:
-        """Mark a task as completed."""
-        task.mark_completed()
+    def mark_task_completed(self, task: Task, pet: Optional[Pet] = None):
+        """Mark a task as completed; if it recurs, add next occurrence back to pet."""
+        next_task = task.mark_completed()
+        if next_task is not None and pet is not None:
+            pet.add_task(next_task)
+        return next_task
 
     def reschedule_task(self, task: Task, new_time: datetime) -> None:
         """Reschedule a task to a new time."""
