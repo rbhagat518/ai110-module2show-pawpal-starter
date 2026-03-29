@@ -45,6 +45,15 @@ def main():
         priority=2
     )
 
+    # Add a conflict task at the same exact time to verify warning behavior
+    max_conflict = Task(
+        description="Quick grooming",
+        time=today_base + timedelta(hours=2),
+        frequency=Frequency.ONCE,
+        duration=15,
+        priority=4
+    )
+
     max_play = Task(
         description="Evening playtime",
         time=today_base + timedelta(hours=4),
@@ -70,13 +79,16 @@ def main():
         priority=2
     )
 
-    # Add tasks to pets
+    # Add tasks out of chronological order to test sorting behavior
+    # (max_play is late, max_walk is early, max_feed is in-between)
+    max_pet.add_task(max_play)
     max_pet.add_task(max_walk)
     max_pet.add_task(max_feed)
-    max_pet.add_task(max_play)
+    max_pet.add_task(max_conflict)
 
-    luna_pet.add_task(luna_feed)
+    # (luna_litter is later than luna_feed)
     luna_pet.add_task(luna_litter)
+    luna_pet.add_task(luna_feed)
 
     # Create scheduler and display today's schedule
     scheduler = Scheduler(owner)
@@ -117,6 +129,38 @@ def main():
 
     if not conflicts_found:
         print("No conflicts detected! ✅")
+
+    # Demonstrate sorting/filtering methods
+    print("\n🧪 Validation: sorting and filtering checks")
+    print("-" * 35)
+    all_tasks = owner.get_all_tasks()
+    print("All tasks (in insertion order):")
+    for task in all_tasks:
+        print(f"  • {task.time.strftime('%H:%M')} - {task.description} ({task.frequency.value})")
+
+    print("\nAll tasks sorted by time:")
+    sorted_by_time = sorted(all_tasks, key=lambda t: t.time)
+    for task in sorted_by_time:
+        print(f"  • {task.time.strftime('%H:%M')} - {task.description}")
+
+    print("\nUpcoming pending tasks (next 6h via scheduler.get_upcoming_tasks):")
+    upcoming_sorted = scheduler.get_upcoming_tasks(hours_ahead=6)
+    for task in upcoming_sorted:
+        print(f"  • {task.time.strftime('%H:%M')} - {task.description}")
+
+    print("\nTasks for Max (by pet filter):")
+    max_tasks = owner.get_tasks_by_pet('Max')
+    for task in max_tasks:
+        print(f"  • {task.time.strftime('%H:%M')} - {task.description} [{task.completion_status.value}]")
+
+    # Mark one task completed and filter by status
+    if max_tasks:
+        max_tasks[0].mark_completed()
+
+    pending_max = [t for t in max_tasks if t.completion_status == CompletionStatus.PENDING]
+    print("\nPending tasks for Max:")
+    for task in pending_max:
+        print(f"  • {task.time.strftime('%H:%M')} - {task.description}")
 
     print("\n🎯 Priority Tasks")
     print("-" * 15)

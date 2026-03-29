@@ -30,8 +30,7 @@ Schedules contain Tasks.
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
----
-
+Yes, during implementation I opted to use a Task, Owner, Pet and Scheduler format. This reformatting was partially due to Copilot's suggestions and seemed like a simpler way to display the relationships.
 ## 2. Scheduling Logic and Tradeoffs
 
 **a. Constraints and priorities**
@@ -39,10 +38,15 @@ Schedules contain Tasks.
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
 
+The scheduler consider constraints on priority and preference. I decided this for organization and simplicity purposes.
+
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
+
+One tradeoff the scheduler makes is checking for conflicts only within a single pet's schedule, not across multiple pets. For example, in the `check_conflicts` method in `pawpal_system.py`, it iterates through tasks for one pet and compares their times and durations, but does not consider tasks from other pets. 
+In a pet care scenario we may want overlap, but at the same time each pet's routine is typically independent, and cross-pet conflicts are less common or can be managed manually by the owner, keeping the system simple and focused on per-pet reliability rather than complex multi-pet optimization.
 
 ---
 

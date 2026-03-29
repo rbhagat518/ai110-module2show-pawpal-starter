@@ -41,3 +41,7 @@ pip install -r requirements.txt
 5. Add tests to verify key behaviors.
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
+
+### Smarter Scheduling
+
+I added conflict detection into my scheudling algorithm. Conflict detection is per-pet only, not cross-pet as we may want to overlap pet tasks across other pets (pet care scenario).
