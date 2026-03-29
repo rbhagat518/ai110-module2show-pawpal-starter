@@ -2,10 +2,28 @@
 
 ## 1. System Design
 
+three core actions a user should be able to perform:
+add pets
+add tasks for a pet
+allocate time slots for each task
+info needs to hold:
+Classes: Pet, Task, Schedule, Scheduler
+Pet object has attributes such as task objects, name. it has methods such as add task
+Task Objects have attributes such as time, name.
+Schedule class which interacts with Pet Objects and Tasks to generate schedules
+
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+
+There are 4 critical classes to the UML design: Schedule, Scheduler, Pet and Task.
+Each Pet has an associated Schedule to them. Each Pet has Tasks associated with them
+The Scheduler class holds multitudes of Schedules and Pets.
+More specifically, the Scheduler tracks the Pets and manages Schedules.
+The Pets have tasks and own Schedules.
+Schedules contain Tasks.
 
 **b. Design changes**
 
