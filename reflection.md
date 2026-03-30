@@ -57,10 +57,18 @@ In a pet care scenario we may want overlap, but at the same time each pet's rout
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
 - What kinds of prompts or questions were most helpful?
 
+Designing UML, Evaluating UML, Analyzing Core Functionality, Analyzing test cases, Implementing Core Functionality, Implementing Tests, Rewriting Explainations
+Explaining, Implementing, Analyzing functionality was most helpful.
+
+
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 - How did you evaluate or verify what the AI suggested?
+
+UML diagram seemed too complicated initally.
+I went a lot slower and understood the tests very carefully when taking AI suggestions.
+
 
 ---
 
@@ -71,10 +79,22 @@ In a pet care scenario we may want overlap, but at the same time each pet's rout
 - What behaviors did you test?
 - Why were these tests important?
 
+I added conflict detection into my scheduling algorithm. Conflict detection is per-pet only, not cross-pet as we may want to overlap pet tasks across other pets (pet care scenario).
+
+My Tests focus on:
+
+Sorting Correctness: Verify tasks are returned in chronological order.
+Recurrence Logic: Confirm that marking a daily task complete creates a new task for the following day.
+Conflict Detection: Verify that the Scheduler flags duplicate times.
+
+
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
 - What edge cases would you test next if you had more time?
+
+Confidence Level: 3 stars. This testing code seems to be working correctly, but I can't tell if my implementation/design is 
+
 
 ---
 
@@ -84,10 +104,18 @@ In a pet care scenario we may want overlap, but at the same time each pet's rout
 
 - What part of this project are you most satisfied with?
 
+I'm satisfied with the end to end development of this project.
+
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
 
+Add more complexity to the scheduling.
+
+
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+
+Its so easy to get a bunch of code thrown at you and get so lost.
+

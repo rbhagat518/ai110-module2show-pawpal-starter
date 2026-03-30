@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pawpal_system import Owner, Pet, Task, Scheduler, Frequency, CompletionStatus
 
@@ -84,7 +84,9 @@ with col2:
 with col3:
     priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
 
-task_time = st.datetime_input("Task date/time", value=datetime.now())
+task_date = st.date_input("Task date", value=datetime.now().date())
+task_time_input = st.time_input("Task time", value=datetime.now().time())
+task_time = datetime.combine(task_date, task_time_input)
 
 if st.button("Schedule task"):
     if "current_pet" not in st.session_state:
@@ -115,7 +117,7 @@ if st.button("Schedule task"):
 
 if st.session_state.tasks:
     st.write("Current tasks:")
-    st.table(st.session_state.tasks)
+    st.dataframe(st.session_state.tasks, use_container_width=True)
 else:
     st.info("No tasks yet. Add one above.")
 
@@ -128,11 +130,16 @@ if st.button("Generate schedule"):
     owner = st.session_state.owner
     scheduler = Scheduler(owner)
 
-    upcoming = scheduler.get_upcoming_tasks(hours_ahead=24)
+    # Get prioritized upcoming tasks
+    all_pending = scheduler.organize_tasks_by_priority()
+    now = datetime.now()
+    cutoff = now + timedelta(hours=24)
+    upcoming = [task for task in all_pending if task.time >= now and task.time <= cutoff]
+
     if not upcoming:
         st.info("No upcoming tasks in the next 24 hours.")
     else:
-        st.write("Upcoming tasks in next 24h:")
+        st.write("Upcoming tasks in next 24h (sorted by priority):")
         schedule_rows = [
             {
                 "pet": next((pet.name for pet in owner.get_pets() if task in pet.tasks), "N/A"),
@@ -143,7 +150,19 @@ if st.button("Generate schedule"):
             }
             for task in upcoming
         ]
-        st.table(schedule_rows)
+        st.dataframe(schedule_rows, use_container_width=True)
+
+    # Check for conflicts
+    conflicts = []
+    for pet in owner.get_pets():
+        pet_conflicts = scheduler.check_conflicts(pet)
+        if pet_conflicts:
+            conflicts.extend([f"{pet.name}: {c}" for c in pet_conflicts])
+
+    if conflicts:
+        st.warning("Schedule conflicts detected:")
+        for conflict in conflicts:
+            st.write(f"- {conflict}")
 
     overdue = scheduler.get_overdue_tasks()
     if overdue:
@@ -157,4 +176,6 @@ if st.button("Generate schedule"):
             }
             for task in overdue
         ]
-        st.table(overdue_rows)
+        st.dataframe(overdue_rows, use_container_width=True)
+    else:
+        st.success("Schedule generated successfully! No overdue tasks.")
